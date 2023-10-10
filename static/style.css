@@ -1,0 +1,44 @@
+        #todo-list {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f2f2f2;
+            border-radius: 5px;
+        }
+
+        #todo-list h1 {
+            text-align: center;
+        }
+
+        #task-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .task {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            border-radius: 3px;
+        }
+
+        .task input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .task .delete-button {
+            background-color: #ff5e5e;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .task .delete-button:hover {
+            background-color: #ff3333;
+        }

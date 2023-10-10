@@ -1,0 +1,9 @@
+<ul id="task-list">
+    {{ range . }}
+        <li class="task">
+            <input type="checkbox">
+            <span> {{ .Title }}</span>
+            <button class="delete-button">Delete</button>
+        </li>
+    {{ end }}
+</ul>
