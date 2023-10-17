@@ -24,7 +24,11 @@
                         />
                         <input type="hidden" name="id" value={{ .Id }} />
                     </form>
-                    <span> {{ .Title }} </span>
+                    <span
+                        {{ if .Checked }}
+                            class="strike"
+                        {{ end }}
+                        > {{ .Title }} </span>
                     <form hx-target="#task-list" hx-delete="/todo/{{ .Id }}" hx-swap="outerHTML">
                         <input type="hidden" name="id" value={{ .Id }} />
                         <button class="delete-button" type="submit">Delete</button>
@@ -33,7 +37,7 @@
             {{ end }}
         </ul>
         <div>
-            <form hx-post="/todo" hx-target="#task-list" hx-swap="outerHTML">
+            <form hx-post="/todo" hx-target="#task-list" hx-swap="outerHTML" autocomplete="off">
                 <input type="text" id="new-task" onfocus="this.value=''" placeholder="New Task" name="todo" required />
                 <button id="add-task" type="submit">Add Task</button>
             </form>

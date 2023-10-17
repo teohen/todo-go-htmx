@@ -11,7 +11,11 @@
             />
             <input type="hidden" name="id" value={{ .Id }} />
             </form>
-            <span> {{ .Title }} </span>
+            <span
+                {{ if .Checked }}
+                    class="strike"
+                {{ end }}
+                > {{ .Title }} </span>
             <form hx-target="#task-list" hx-delete="/todo/{{ .Id }}" hx-swap="outerHTML">
                 <input type="hidden" name="id" value={{ .Id }} />
               <button class="delete-button" type="submit">Delete</button>

@@ -42,3 +42,7 @@
         .task .delete-button:hover {
             background-color: #ff3333;
         }
+
+        .strike {
+            text-decoration: line-through;
+        }
