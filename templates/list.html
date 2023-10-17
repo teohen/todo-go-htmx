@@ -1,9 +1,21 @@
 <ul id="task-list">
     {{ range . }}
         <li class="task">
-            <input type="checkbox">
-            <span> {{ .Title }}</span>
-            <button class="delete-button">Delete</button>
+            <form hx-target="#task-list" hx-swap="outerHTML">
+            <input type="checkbox"
+                   hx-put="/todo"
+                   hx-trigger="click"
+                   {{ if .Checked}}
+                   checked
+                   {{ end }}
+            />
+            <input type="hidden" name="id" value={{ .Id }} />
+            </form>
+            <span> {{ .Title }} </span>
+            <form hx-target="#task-list" hx-delete="/todo/{{ .Id }}" hx-swap="outerHTML">
+                <input type="hidden" name="id" value={{ .Id }} />
+              <button class="delete-button" type="submit">Delete</button>
+            </form>
         </li>
     {{ end }}
 </ul>

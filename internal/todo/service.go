@@ -16,6 +16,7 @@ type Service interface {
 	Get(id uuid.UUID) (domain.Todo, error)
 	findAll() []domain.Todo
 	Delete(id uuid.UUID) error
+	Update(id uuid.UUID, todo domain.Todo) error
 }
 
 func NewTodoService(db Repository) Service {
@@ -66,6 +67,17 @@ func (TS *TodoService) Delete(id uuid.UUID) error {
 
 	if err != nil {
 		fmt.Println("ERROR DELETING ONE TODO: ", err)
+		return err
+	}
+
+	return nil
+}
+
+func (TS *TodoService) Update(id uuid.UUID, todo domain.Todo) error {
+	err := TS.repository.Update(id, todo)
+
+	if err != nil {
+		fmt.Println("ERROR UPDATING ONE TODO:", err)
 		return err
 	}
 

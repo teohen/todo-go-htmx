@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -22,9 +23,13 @@ func main() {
 	router.Get("/", handler.GetAll)
 	router.Post("/todo", handler.Create)
 	router.Delete("/todo/{id}", handler.Delete)
+	router.Put("/todo", handler.Put)
 
 	router.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
 
-	http.ListenAndServe(":3000", router)
+	err := http.ListenAndServe(":3000", router)
 
+	if err != nil {
+		log.Fatal("Error listening to port", err)
+	}
 }

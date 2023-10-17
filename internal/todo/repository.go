@@ -12,6 +12,7 @@ type Repository interface {
 	GetAll() ([]domain.Todo, error)
 	Get(id uuid.UUID) (domain.Todo, error)
 	Delete(id uuid.UUID) error
+	Update(id uuid.UUID, todo domain.Todo) error
 }
 
 type TodoRepository struct {
@@ -58,5 +59,15 @@ func (TR *TodoRepository) Delete(id uuid.UUID) error {
 	}
 
 	TR.todos = append(TR.todos[:index], TR.todos[index+1:]...)
+	return nil
+}
+
+func (TR *TodoRepository) Update(id uuid.UUID, todo domain.Todo) error {
+	index := TR.GetIndex(id)
+	if index < 0 {
+		return errors.New("todo not found")
+	}
+
+	TR.todos[index] = todo
 	return nil
 }

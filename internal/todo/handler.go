@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"text/template"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/teohen/todo-go-htmx/internal/domain"
 )
@@ -13,6 +14,7 @@ type Handler interface {
 	Create(w http.ResponseWriter, r *http.Request)
 	GetAll(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
+	Put(w http.ResponseWriter, r *http.Request)
 }
 
 type TodoHandler struct {
@@ -41,11 +43,15 @@ func (th *TodoHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 }
 
 func (th *TodoHandler) Create(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
+	err := r.ParseForm()
+
+	if err != nil {
+		fmt.Println("Error parsing the request form")
+		w.WriteHeader(400)
+		return
+	}
 
 	data := r.Form.Get("todo")
-
-	tmpl, err := template.ParseFiles("./templates/list.html")
 
 	if err != nil {
 		fmt.Println("Error", err)
@@ -57,26 +63,23 @@ func (th *TodoHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_ = th.service.Save(todo)
-
-	todoList := th.service.findAll()
-
-	err = tmpl.ExecuteTemplate(w, "list.html", todoList)
-
-	if err != nil {
-		fmt.Println("error", err)
-	}
+	th.renderList(w, r)
 }
 
 func (th *TodoHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	data := r.PostFormValue("id")
+	err := r.ParseForm()
 
-	tmpl, err := template.ParseFiles("./templates/list-item.html")
+	if err != nil {
+		fmt.Println("Error parsing form", err)
+	}
+
+	idTodoForm := chi.URLParam(r, "id")
 
 	if err != nil {
 		fmt.Println("Error", err)
 	}
 
-	idTodo, err := uuid.Parse(data)
+	idTodo, err := uuid.Parse(idTodoForm)
 
 	if err != nil {
 		fmt.Println("ERROR PARSING TODO ID FROM CLIENT", err)
@@ -84,8 +87,57 @@ func (th *TodoHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	err = th.service.Delete(idTodo)
 
-	err = tmpl.ExecuteTemplate(w, "./templates/list-item.html", nil)
+	if err != nil {
+		fmt.Println("Error deleting item", err)
+	}
+	th.renderList(w, r)
+}
 
+func (th *TodoHandler) Put(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+
+	if err != nil {
+		fmt.Println("Error parsing form", err)
+	}
+
+	idTodoForm := r.PostFormValue("id")
+
+	if err != nil {
+		fmt.Println("Error", err)
+	}
+
+	idTodo, err := uuid.Parse(idTodoForm)
+
+	if err != nil {
+		fmt.Println("ERROR PARSING TODO ID FROM CLIENT", err)
+	}
+
+	updatedTodo, err := th.service.Get(idTodo)
+
+	if err != nil {
+		fmt.Println("Error getting item", err)
+	}
+
+	updatedTodo.Checked = !updatedTodo.Checked
+
+	err = th.service.Update(idTodo, updatedTodo)
+
+	if err != nil {
+		fmt.Println("Error updating todo", err)
+	}
+	th.renderList(w, r)
+}
+
+func (th *TodoHandler) renderList(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("./templates/list.html")
+
+	if err != nil {
+		fmt.Println("Error", err)
+	}
+
+	todoList := th.service.findAll()
+
+	err = tmpl.ExecuteTemplate(w, "list.html", todoList)
 	if err != nil {
 		fmt.Println("error", err)
 	}

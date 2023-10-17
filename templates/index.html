@@ -13,16 +13,28 @@
         <h1>To-Do List</h1>
         <ul id="task-list">
             {{ range . }}
-            <li class="task">
-                <input type="checkbox">
-                <span> {{ .Title }}</span>
-                <button class="delete-button">Delete</button>
-            </li>
-           {{ end }}
+                <li class="task">
+                    <form hx-target="#task-list" hx-swap="outerHTML">
+                        <input type="checkbox"
+                            hx-put="/todo"
+                            hx-trigger="click"
+                            {{ if .Checked}}
+                                checked
+                            {{ end }}
+                        />
+                        <input type="hidden" name="id" value={{ .Id }} />
+                    </form>
+                    <span> {{ .Title }} </span>
+                    <form hx-target="#task-list" hx-delete="/todo/{{ .Id }}" hx-swap="outerHTML">
+                        <input type="hidden" name="id" value={{ .Id }} />
+                        <button class="delete-button" type="submit">Delete</button>
+                    </form>
+                </li>
+            {{ end }}
         </ul>
         <div>
             <form hx-post="/todo" hx-target="#task-list" hx-swap="outerHTML">
-                <input type="text" id="new-task" placeholder="New Task" name="todo">
+                <input type="text" id="new-task" onfocus="this.value=''" placeholder="New Task" name="todo" required />
                 <button id="add-task" type="submit">Add Task</button>
             </form>
         </div>
